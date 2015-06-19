@@ -68,3 +68,25 @@ exports.create = function(req, res) {
 		});
 	}
 }
+
+exports.edit = function(req, res) {
+	var quiz = req.quiz;
+	res.render('quizes/edit', {quiz: quiz, errors: []});
+};
+
+exports.update = function(req, res) {
+	req.quiz.pregunta = req.body.quiz.pregunta;
+	req.quiz.respuesta = req.body.quiz.respuesta;
+
+	var errors = req.quiz.validate();
+	if (errors) {
+		var i=0;
+		var errores=new Array();
+		for (var prop in errors) errores[i++]={message: errors[prop]};
+		res.render('quizes/edit', {quiz: req.quiz, errors: errores});
+	} else {
+		req.quiz.save({fields: ["pregunta", "respuesta"]}).then(function() {
+			res.redirect('/quizes');
+		})
+	}
+}
