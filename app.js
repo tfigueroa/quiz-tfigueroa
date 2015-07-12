@@ -37,6 +37,23 @@ app.use(function(req, res, next) {
     next();
 });
 
+// Auto-logout
+app.use(function(req, res, next) {
+    if (req.session.user) {
+        var lastTransacitionTime = req.session.user['lastTransaction'];
+        var currentTime = new Date().getTime();
+        log.info('Last transaction time: '+lastTransacitionTime+', current Time:'+currentTime);
+        var inactivityTime = (currentTime - lastTransacitionTime);
+        log.info('Inactivity time: '+inactivityTime);
+        if (inactivityTime > 120000) {
+            delete req.session.user;
+            res.redirect('/login');
+        }
+        req.session.user['lastTransaction'] = currentTime;
+    }
+    next();
+});
+
 app.use('/', routes);
 
 // catch 404 and forward to error handler
