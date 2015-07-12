@@ -42,9 +42,7 @@ app.use(function(req, res, next) {
     if (req.session.user) {
         var lastTransacitionTime = req.session.user['lastTransaction'];
         var currentTime = new Date().getTime();
-        log.info('Last transaction time: '+lastTransacitionTime+', current Time:'+currentTime);
         var inactivityTime = (currentTime - lastTransacitionTime);
-        log.info('Inactivity time: '+inactivityTime);
         if (inactivityTime > 120000) {
             delete req.session.user;
             res.redirect('/login');
